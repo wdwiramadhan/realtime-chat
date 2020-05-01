@@ -1,54 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-  <title>Realtime Chat</title>
-  <style>
-    body {
-  min-height: 100vh;
-    }
-
-    ::-webkit-scrollbar {
-      width: 5px;
-    }
-
-    ::-webkit-scrollbar-track {
-      width: 5px;
-      background: #f5f5f5;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      width: 1em;
-      background-color: #ddd;
-      outline: 1px solid slategrey;
-      border-radius: 1rem;
-    }
-
-    .text-small {
-      font-size: 0.9rem;
-    }
-
-    .messages-box,
-    .chat-box {
-      height: 510px;
-      overflow-y: scroll;
-    }
-
-    .rounded-lg {
-      border-radius: 0.5rem;
-    }
-
-    input::placeholder {
-      font-size: 0.9rem;
-      color: #999;
-    }
-  </style>
-</head>
-<body>
-  <div class="container py-5 px-4">
+<div class="container py-5 px-4">
     <div class="row rounded-lg overflow-hidden shadow">
       <!-- Users box-->
       <div class="col-5 px-0">
@@ -79,8 +29,14 @@
       </div>
     </div>
   </div>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  <script src="/socket.io/socket.io.js"></script>
   <script>
+    const sender  = '{{ email }}';
+    let socket = io();
+    socket.on('connect', () => {
+      socket.emit('join', {email: sender});
+    });
+    
     const getAllUser = async() => {
       try{
         const res = await fetch('/api/user');
@@ -103,9 +59,24 @@
       await getMessage(email);
       const sendButton = document.getElementById('sendButton');
       sendButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        storeMessage(email);
-        document.getElementById('message').value = '';
+        e.preventDefault()
+        let message = document.getElementById('message').value;
+        if(message != ''){
+          let chatBox = document.getElementById('chatBox');
+          document.getElementById('message').value = '';
+          console.log("mtap");
+          chatBox.innerHTML +=
+          `
+            <div class="media w-50 ml-auto mb-3" id="sender">
+              <div class="media-body">
+                <div class="bg-primary rounded py-2 px-3 mb-2">
+                  <p class="text-small mb-0 text-white">${message}</p>
+                </div>
+              </div>
+            </div>
+          `
+          storeMessage(email, message);
+        }
       })
     })
 
@@ -119,7 +90,6 @@
         }
         const res = await fetch('/api/chat/'+receiver, options);
         const chats = await res.json();
-        console.log(chats);
         let chatBox = document.getElementById('chatBox');
         chatBox.innerHTML = ' ';
         chats.data.forEach((chat) => {
@@ -131,7 +101,6 @@
                   <div class="bg-light rounded py-2 px-3 mb-2">
                     <p class="text-small mb-0 text-muted">${chat.message}</p>
                   </div>
-                  <p class="small text-muted">${chat.createdAt}</p>
                 </div>
               </div>
           `
@@ -143,7 +112,6 @@
                   <div class="bg-primary rounded py-2 px-3 mb-2">
                     <p class="text-small mb-0 text-white">${chat.message}</p>
                   </div>
-                  <p class="small text-muted">${chat.createdAt}</p>
                 </div>
               </div>
           `
@@ -156,10 +124,10 @@
       
     }
 
-    const storeMessage = async(receiver) => {
+    const storeMessage = async(receiver, message) => {
       try{
         const data = {
-          message : document.getElementById('message').value,
+          message : message,
           receiver : receiver,
         }
         const options = {
@@ -170,12 +138,26 @@
           }
         }
         const store = await fetch('/api/chat', options);
+        if(store){
+          socket.emit('chat message', {message:message,sender:sender, receiver,receiver});
+        }
         return;
       }catch(err){
         console.log(err);
       }
     }
+
+    socket.on('chat message',(msg) => {
+      document.getElementById('chatBox').innerHTML +=
+      `
+        <div class="media  w-50 mb-3" id="receiver">
+          <div class="media-body">
+            <div class="bg-light rounded py-2 px-3 mb-2">
+              <p class="text-small mb-0 text-muted">${msg}</p>
+            </div>
+          </div>
+        </div>
+      `
+    })
   </script>
-</body>
-</html>
 
