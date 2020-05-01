@@ -6,31 +6,42 @@ const io = require('socket.io')(http);
 const routes = require('./routes/index');
 const session = require('express-session');
 const db = require('./config/db');
-const path = require('path');
+const exphbs  = require('express-handlebars');
 const port = process.env.PORT || 3000;
 
 app.use(bodyParses.json());
 app.use(bodyParses.urlencoded({ extended: false }));
+
 db.connectDB();
+
 app.use(session({
   secret: process.env.SESSION_KEY,
   resave: false,
   saveUninitialized: true
 }));
-io.on('connection', (socket)=>{
-  console.log('user connected');
-});
+
 app.use('/', routes);
 
+app.engine('handlebars', exphbs());
+app.set('view engine', 'handlebars');
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname+'/views/login.html'))
+  res.render('login');
 })
 app.get('/register', (req, res) => {
-  res.sendFile(path.join(__dirname+'/views/register.html'))
+  res.render('register');
 })
 app.get('/chat', (req, res) => {
-  res.sendFile(path.join(__dirname+'/views/chat.html'))
+  res.render('chat',{email:req.session.email});
 })
+
+io.on("connection", function (socket) {
+  socket.on('join', function (data) {
+    socket.join(data.email); 
+  });
+  socket.on('chat message', (data) => {
+    io.sockets.in(data.receiver).emit('chat message', data.message);
+  });
+});
 
 http.listen(port, () => {
   console.log('Server running on port '+port)
