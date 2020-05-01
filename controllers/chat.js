@@ -38,7 +38,10 @@ const store = async(req, res) => {
     if(chat){
       console.log('success');
     }
-    return;
+    return res.status(201).json({
+      success:true,
+      data:chat
+    });
   }catch(err){
     console.log(err);
   }
