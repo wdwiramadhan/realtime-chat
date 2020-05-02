@@ -32,7 +32,8 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const sender  = '{{ email }}';
-    let socket = io();
+    var receiverEmail = '';
+    const socket = io();
     socket.on('connect', () => {
       socket.emit('join', {email: sender});
     });
@@ -56,6 +57,7 @@
     const users = document.querySelector('#allUser');
     users.addEventListener('click', async(e) => {
       let email = e.target.dataset.email;
+      receiverEmail = email;
       await getMessage(email);
       const sendButton = document.getElementById('sendButton');
       sendButton.addEventListener('click', (e) => {
@@ -147,17 +149,20 @@
       }
     }
 
-    socket.on('chat message',(msg) => {
-      document.getElementById('chatBox').innerHTML +=
-      `
-        <div class="media  w-50 mb-3" id="receiver">
-          <div class="media-body">
-            <div class="bg-light rounded py-2 px-3 mb-2">
-              <p class="text-small mb-0 text-muted">${msg}</p>
+     socket.on('chat message',(data) => {
+       if(data.sender == receiverEmail){
+          document.getElementById('chatBox').innerHTML +=
+          `
+            <div class="media  w-50 mb-3" id="receiver">
+              <div class="media-body">
+                <div class="bg-light rounded py-2 px-3 mb-2">
+                  <p class="text-small mb-0 text-muted">${data.message}</p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      `
-    })
+          `
+        }
+      })
+    
   </script>
 
