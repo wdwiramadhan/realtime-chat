@@ -39,7 +39,7 @@ io.on("connection", function (socket) {
     socket.join(data.email); 
   });
   socket.on('chat message', (data) => {
-    io.sockets.in(data.receiver).emit('chat message', data.message);
+    io.sockets.in(data.receiver).emit('chat message', {message:data.message, sender:data.sender});
   });
 });
 
