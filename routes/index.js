@@ -4,6 +4,7 @@ const auth = require('./auth');
 const user = require('./user');
 const chat = require('./chat');
 const authenticate = require('../middleware/authenticate');
+const passport = require('passport');
 
 app.use('/auth', auth);
 app.use('/chat',authenticate.isLoggedIn);
