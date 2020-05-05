@@ -7,6 +7,7 @@ const routes = require('./routes/index');
 const session = require('express-session');
 const db = require('./config/db');
 const exphbs  = require('express-handlebars');
+const passport = require('passport')
 const port = process.env.PORT || 3000;
 
 app.use(bodyParses.json());
@@ -20,19 +21,13 @@ app.use(session({
   saveUninitialized: true
 }));
 
+app.use(passport.initialize())
+app.use(passport.session())
+
 app.use('/', routes);
 
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
-app.get('/', (req, res) => {
-  res.render('login');
-})
-app.get('/register', (req, res) => {
-  res.render('register');
-})
-app.get('/chat', (req, res) => {
-  res.render('chat',{email:req.session.email});
-})
 
 io.on("connection", function (socket) {
   socket.on('join', function (data) {
@@ -42,6 +37,11 @@ io.on("connection", function (socket) {
     io.sockets.in(data.receiver).emit('chat message', {message:data.message, sender:data.sender});
   });
 });
+
+app.get('/logout', (req, res) => {
+  req.logOut()
+  res.redirect('/')
+})
 
 http.listen(port, () => {
   console.log('Server running on port '+port)
