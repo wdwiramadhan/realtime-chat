@@ -1,22 +1,12 @@
 const Chat = require('../models/Chat')
 
 const index = async(req, res) => {
-  try{
-    const chat = await Chat.find();
-    if(chat){
-      return res.status(200).json({
-        success : true,
-        data : chat
-      })
-    }
-  }catch(err){
-    console.log(err)
-  }
+  res.render('chat',{email:req.session.passport.user});
 }
 
 const show = async(req, res) => {
   try{
-    const sender  = req.session.email;
+    const sender  = req.session.passport.user;
     const receiver = req.params.id;
     const chat = await Chat.find({$or: [{sender:sender,receiver:receiver},{sender:receiver,receiver:sender}]});
     if(chat){
@@ -32,7 +22,7 @@ const show = async(req, res) => {
 
 const store = async(req, res) => {
   try{
-    const sender  = req.session.email;
+    const sender  = req.session.passport.user;
     const {message, receiver} = req.body;
     const chat = await Chat.create({message, sender, receiver});
     if(chat){

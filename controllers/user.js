@@ -2,7 +2,7 @@ const User = require('../models/User')
 
 const index = async(req, res) => {
   try{
-    const user = await User.find({email: {$ne: req.session.email}});
+    const user = await User.find({email: {$ne: req.session.passport.user}});
     if(user){
       return res.status(200).json({
         success : true,
