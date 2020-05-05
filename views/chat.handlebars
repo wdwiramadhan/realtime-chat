@@ -40,7 +40,7 @@
     
     const getAllUser = async() => {
       try{
-        const res = await fetch('/api/user');
+        const res = await fetch('/user');
         const users = await res.json()
         users.data.forEach((user) => {
           document.getElementById('allUser').innerHTML += 
@@ -90,7 +90,7 @@
             'Content-Type': 'application/json'
           }
         }
-        const res = await fetch('/api/chat/'+receiver, options);
+        const res = await fetch('/chat/'+receiver, options);
         const chats = await res.json();
         let chatBox = document.getElementById('chatBox');
         chatBox.innerHTML = ' ';
@@ -139,7 +139,7 @@
             'Content-Type': 'application/json'
           }
         }
-        const store = await fetch('/api/chat', options);
+        const store = await fetch('/chat', options);
         if(store){
           socket.emit('chat message', {message:message,sender:sender, receiver,receiver});
         }
