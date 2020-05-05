@@ -4,12 +4,10 @@ const auth = require('./auth');
 const user = require('./user');
 const chat = require('./chat');
 const authenticate = require('../middleware/authenticate');
-const passport = require('passport');
 
-app.use('/auth', auth);
-app.use('/chat',authenticate.isLoggedIn);
-app.use('/api/user', user);
-app.use('/api/chat', chat);
+app.use('/', auth);
+app.use('/user', authenticate.checkAuthenticate,user);
+app.use('/chat', authenticate.checkAuthenticate,chat);
 
 
 module.exports = app;
