@@ -1,13 +1,13 @@
-const isLoggedIn = async(req, res, next) => {
-  try{
-    if(req.session.isLoggedIn){
-      next()
-    }else{
-      res.redirect('/');
-    }
-  }catch(err){
-    console.log(err)
+const checkAuthenticate = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next()
   }
+  res.redirect('/')
 }
-
-module.exports = {isLoggedIn}
+const checkNotAuthenticate = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return res.redirect('/chat')
+  }
+  next()
+}
+module.exports = {checkAuthenticate,checkNotAuthenticate}
