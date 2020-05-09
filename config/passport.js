@@ -30,7 +30,7 @@ const initialize = () => {
   passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
-    callbackURL: "/login/facebook/callback",
+    callbackURL: "https://whatsupps.herokuapp.com/login/facebook/callback",
     profileFields: ['id', 'emails', 'name']
   },
   async(accessToken, refreshToken, profile, done) => {
