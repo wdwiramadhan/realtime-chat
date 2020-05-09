@@ -13,7 +13,11 @@ const _register = async (req, res) => {
     const data = {
       name : req.body.name,
       email : req.body.email,
-      password : bcrypt.hashSync(req.body.password,12)
+      account:{
+        type: 'local',
+        uid: null,
+        password : bcrypt.hashSync(req.body.password,12)
+      }
     }
     const user = await User.create(data)
     if(user){

@@ -1,6 +1,6 @@
-const mongosee = require('mongoose');
+const mongoose = require('mongoose');
 
-const ChatSchema = new mongosee.Schema({
+const ChatSchema = new mongoose.Schema({
   message:{
     type:String,
     required:true
@@ -19,4 +19,4 @@ const ChatSchema = new mongosee.Schema({
   }
 })
 
-module.exports = mongosee.model('Chat', ChatSchema);
+module.exports = mongoose.model('Chat', ChatSchema);

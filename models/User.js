@@ -1,6 +1,6 @@
-const mongosee = require('mongoose');
+const mongoose = require('mongoose');
 
-const UserSchema = new mongosee.Schema({
+const UserSchema = new mongoose.Schema({
   name:{
     type:String,
     required:true
@@ -9,9 +9,13 @@ const UserSchema = new mongosee.Schema({
     type:String,
     required:true
   },
-  password:{
-    type:String,
-    required:true,
+  account:{
+    type:{
+      type:String,
+      require:true
+    },
+    uid:String,
+    password:String,
   },
   createdAt:{
     type:Date,
@@ -19,4 +23,4 @@ const UserSchema = new mongosee.Schema({
   }
 })
 
-module.exports = mongosee.model('User', UserSchema);
+module.exports = mongoose.model('User', UserSchema);

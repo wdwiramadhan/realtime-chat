@@ -15,4 +15,11 @@ router.get('/register', authenticate.checkNotAuthenticate, auth.register)
 router.post('/register', authenticate.checkNotAuthenticate,auth._register);
 router.post('/logout',authenticate.checkNotAuthenticate, auth.logout);
 
+router.get('/login/facebook',authenticate.checkNotAuthenticate, passport.authenticate('facebook'));
+router.get('/login/facebook/callback',authenticate.checkNotAuthenticate, passport.authenticate('facebook', {
+  scope: ['email'],
+  successRedirect: '/chat',
+  failureRedirect: '/',
+}));
+
 module.exports = router
